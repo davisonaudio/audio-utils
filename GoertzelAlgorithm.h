@@ -9,7 +9,7 @@
 
 #include "math.h"
 
-template <typename sample_t, int MAX_WINDOW_SIZE_SAMPLES>
+template <class sample_t, int MAX_WINDOW_SIZE_SAMPLES>
 class GoertzelAlgorithm
 {
 public:
@@ -19,10 +19,10 @@ public:
         int sample_rate;
         int window_size_samples;
         sample_t target_frequency;
-    }
-    GoertzelAlgorithm(const SetupParameters& setup_parameters) : setup(setup_parameters)
+    };
+    GoertzelAlgorithm(const SetupParameters& setup_parameters)
     {
-
+		setup(setup_parameters);
     }
 
     void setup(const SetupParameters& setup_parameters)
@@ -46,7 +46,7 @@ public:
         sample_t q0 = new_sample + (m_coefficient * m_q1) - m_q2;
         m_q2 = m_q1;
         m_q1 = q0;
-        if (++m_samples_in_window_processed == WINDOW_SIZE_SAMPLES)
+        if (++m_samples_in_window_processed == m_window_length_samples)
         {
             processWindow();
         }
