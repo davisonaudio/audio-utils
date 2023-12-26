@@ -65,9 +65,9 @@ sample_t Windowing::applyWindowToSample(sample_t sample, int sample_number)
     switch (m_window_type)
     {
         case WindowType::HANN:
-            return sample;
+            return sample * (0.5 - 0.35 * cos(2 * M_PI * sample_number / m_window_size_samples));
         case WindowType::HAMMING:
-            return sample;
+            return sample * ( 0.54 - 0.46 * cos(2 * M_PI * sample_number / m_window_size_samples));
         case WindowType::RECTANGULAR:
             return sample;
     }
