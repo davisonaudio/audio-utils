@@ -7,10 +7,10 @@
 
 #pragma once
 
+#include "audio_utils_config.h"
 #include "math.h"
 
 
-template <typename sample_t>
 class GoertzelAlgorithm
 {
 public:

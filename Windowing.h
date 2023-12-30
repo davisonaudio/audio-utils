@@ -29,8 +29,8 @@ public:
 
     /*
     Apply windowing to a single sample within a window.
+    
     Parameters:
-
     sample - sample to process
     sample_number - index of the sample within the window
 
@@ -40,8 +40,8 @@ public:
 
     /*
     Apply windowing to a window-sized buffer.
+    
     Parameters:
-
     sample_buffer - buffer to apply windowing to. Buffer is treated as an array with length=size of window.
 
     Return: Windowed sample value
