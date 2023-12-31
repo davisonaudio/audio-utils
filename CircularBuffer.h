@@ -11,6 +11,7 @@ template<typename T, unsigned long buffer_length>
 class CircularBuffer
 {
 public:
+
     void write(T new_buffer_val)
     {
         m_buffer[m_write_index++] = new_buffer_val;
@@ -20,8 +21,10 @@ public:
         {
             m_overrun = true;
         }
+
+        m_write_index = m_write_index % buffer_length;
     }
-    
+
     T read()
     {
         T read_val = m_buffer[m_read_index++];
@@ -32,6 +35,7 @@ public:
             m_underrun = true;
         }
 
+        m_read_index = m_read_index % buffer_length;
         return read_val;
     }
 

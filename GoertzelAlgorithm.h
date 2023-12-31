@@ -92,8 +92,7 @@ public:
 /*
 For use in realtime environments, this class updates the Q values sample by sample, rather than bulk processing at the end of each window
 */
-template <typename sample_t>
-class RealtimeGoertzel : public GoertzelAlgorithm<sample_t>
+class RealtimeGoertzel : public GoertzelAlgorithm
 {
 public:
 
@@ -149,8 +148,7 @@ private:
 /*
 This class takes the whole window as a buffer and processes it in one go.
 */
-template <typename sample_t>
-class WholeWindowGoertzel : public GoertzelAlgorithm<sample_t>
+class WholeWindowGoertzel : public GoertzelAlgorithm
 {
 public:
 
