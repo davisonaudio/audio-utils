@@ -26,40 +26,38 @@ public:
 		setup(setup_parameters);
     }
 
+    struct QValues
+    {
+        sample_t q1 = 0;
+        sample_t q2 = 0;
+        void reset()
+        {
+            q1 = 0;
+            q2 = 0;
+        }
+    };
+
     void setup(const SetupParameters& setup_parameters)
     {
         sample_t omega = (2.0 * M_PI * setup_parameters.target_frequency) / setup_parameters.sample_rate;
         m_coefficient = 2.0 * cos(omega);
         m_sine_of_omega = sin(omega);
-        m_consine_of_omega = cos(omega);
-        if (setup_parameters.window_size_samples <= MAX_WINDOW_SIZE_SAMPLES)
-        {
-            m_window_length_samples = setup_parameters.window_size_samples;
-        }
-        else
-        {
-            m_window_length_samples = 0; //error - window size doesn't fix into array!
-        }
+        m_cosine_of_omega = cos(omega);
         
-        resetValues();
     }
 
     void process(sample_t new_sample, QValues& q_vals)
     {
         sample_t q0 = new_sample + (m_coefficient * q_vals.q1) - q_vals.q2;
-        m_q2 = m_q1;
-        m_q1 = q0;
-        if (++m_samples_in_window_processed == m_window_length_samples)
-        {
-            processWindow();
-        }
+        q_vals.q2 = q_vals.q1;
+        q_vals.q1 = q0;
     }
 
     
 
     sample_t getMagnitudeQuick(QValues q_vals)
     {
-        return sqrt( (q_vals.q1 * q_vals.q1) + (q_vals.q2 * q_vals.2) - (m_coefficient * q_vals.q1 * q_vals.q2));
+        return sqrt( (q_vals.q1 * q_vals.q1) + (q_vals.q2 * q_vals.q2) - (m_coefficient * q_vals.q1 * q_vals.q2));
     }
 
     struct ComplexPolarForm
@@ -77,15 +75,11 @@ public:
         mag_and_phase.phase = atan(imaginary / real);
     }
 
-    struct QValues
-    {
-        sample_t q1 = 0;
-        sample_t q2 = 0;
-    };
+
 
     sample_t m_coefficient;
     sample_t m_sine_of_omega;
-    sample_t m_consine_of_omega;
+    sample_t m_cosine_of_omega;
     int m_window_length_samples;
 };
 
@@ -96,7 +90,7 @@ class RealtimeGoertzel : public GoertzelAlgorithm
 {
 public:
 
-    RealtimeGoertzel(const SetupParameters& setup_parameters) : GoertzelAlgorithm(SetupParameters)
+    RealtimeGoertzel(const SetupParameters& setup_parameters) : GoertzelAlgorithm(setup_parameters)
     {
     }
 
@@ -135,8 +129,7 @@ public:
 
     void reset()
     {
-        m_current_q_values.q1 = 0;
-        m_current_q_values.q2 = 0;
+        m_current_q_values.reset();
         m_samples_in_window_processed = 0;
     }
 private:
@@ -152,7 +145,42 @@ class WholeWindowGoertzel : public GoertzelAlgorithm
 {
 public:
 
-    RealtimeGoertzel(const SetupParameters& setup_parameters) : GoertzelAlgorithm(SetupParameters)
+    WholeWindowGoertzel(const SetupParameters& setup_parameters) : GoertzelAlgorithm(setup_parameters)
+    {
+    }
+    
+    double getMagnitude(double* window_buffer)
+    {
+        return getMagnitudeQuick(getQValsForBuffer(window_buffer));
+    }
+    ComplexPolarForm getMagnitudeAndPhase(double* window_buffer)
+    {
+        return getComplexMagnitudeAndPhase(getQValsForBuffer(window_buffer));
+    }
+private:
+    QValues getQValsForBuffer(double* buffer)
+    {
+        QValues q_vals;
+        for (int i = 0 ; i < m_window_length_samples ; i++)
+        {
+            process(buffer[i], q_vals);
+        }
+
+        return q_vals;
+    }
+
+};
+
+/*
+This class implements a sliding goertzel algorithm, where the value at the end of the buffer is removed from the calculation at each step.
+This required each element of the buffer to be stored, so is templated with the buffer size to avoid dynamic allocation.
+*/
+template<unsigned long window_size>
+class SlidingGoertzel : public GoertzelAlgorithm
+{
+public:
+
+    SlidingGoertzel(const SetupParameters& setup_parameters) : GoertzelAlgorithm(setup_parameters)
     {
     }
     
