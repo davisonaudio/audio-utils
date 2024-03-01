@@ -7,6 +7,8 @@ Date: 22/01/2024
 
 */
 
+#pragma once
+
 #include "audio_utils_config.h"
 #include <cmath>
 
