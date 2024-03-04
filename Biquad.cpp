@@ -69,7 +69,7 @@ void Biquad::calcCoefficients()
 {
     sample_t norm;
 	sample_t V = pow(10, fabs(m_filter_gain_db) / 20.0);
-	sample_t K = tan(M_PI * m_cutoff_freq_hz);
+	sample_t K = tan(M_PI * (m_cutoff_freq_hz / m_sample_rate_hz));
 	switch (m_filter_type) {
 	case FilterType::LOWPASS:
 		norm = 1 / (1 + K / m_quality_factor + K * K);
@@ -96,15 +96,15 @@ void Biquad::calcCoefficients()
 		m_coefficients.b2 = (1 - K / m_quality_factor + K * K) * norm;
 		break;
 	case FilterType::NOTCH:
-		norm = 1 / (1 + K / Q + K * K);
+		norm = 1 / (1 + K / m_quality_factor + K * K);
 		m_coefficients.a0 = (1 + K * K) * norm;
 		m_coefficients.a1 = 2 * (K * K - 1) * norm;
 		m_coefficients.a2 = m_coefficients.a0;
 		m_coefficients.b1 = m_coefficients.a1;
-		m_coefficients.b2 = (1 - K / Q + K * K) * norm;
+		m_coefficients.b2 = (1 - K / m_quality_factor + K * K) * norm;
 		break;
 	case FilterType::PEAK:
-		if (peakGain >= 0) { // boost
+		if (m_filter_gain_db >= 0) { // boost
 			norm = 1 / (1 + 1/m_quality_factor * K + K * K);
 			m_coefficients.a0 = (1 + V/m_quality_factor * K + K * K) * norm;
 			m_coefficients.a1 = 2 * (K * K - 1) * norm;
@@ -122,7 +122,7 @@ void Biquad::calcCoefficients()
 		}
 		break;
 	case FilterType::LOWSHELF:
-		if (peakGain >= 0) { // boost
+		if (m_filter_gain_db >= 0) { // boost
 			norm = 1 / (1 + sqrt(2) * K + K * K);
 			m_coefficients.a0 = (1 + sqrt(2*V) * K + V * K * K) * norm;
 			m_coefficients.a1 = 2 * (V * K * K - 1) * norm;
@@ -140,7 +140,7 @@ void Biquad::calcCoefficients()
 		}
 		break;
 	case FilterType::HIGHSHELF:
-		if (peakGain >= 0) { // boost
+		if (m_filter_gain_db >= 0) { // boost
 			norm = 1 / (1 + sqrt(2) * K + K * K);
 			m_coefficients.a0 = (V + sqrt(2*V) * K + K * K) * norm;
 			m_coefficients.a1 = 2 * (K * K - V) * norm;
