@@ -22,9 +22,15 @@ public:
         setSampleRate(sample_rate_hz);
     }
 
+    ToneGenerator()
+    {
+        setFrequency(0.0); //Default to silence
+        setSampleRate(1.0); //Avoid divide by 0 errors by setting to 1.
+    }
+
     void setFrequency(sample_t frequency_hz)
     {
-        m_frequency = frequency;
+        m_frequency = frequency_hz;
     }
 
     void setSampleRate(unsigned int sample_rate_hz)
@@ -42,8 +48,8 @@ public:
     }
 
 private:
-    m_phase = 0;
-    m_frequency = 0;
-    m_inverse_sample_rate = 0;
+    sample_t m_phase = 0;
+    sample_t m_frequency = 0;
+    sample_t m_inverse_sample_rate = 0;
 
 };
