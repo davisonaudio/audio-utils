@@ -1,6 +1,6 @@
 /*
 
-DelayLine.h
+au_DelayLine.h
 
 Author: Matt Davison
 Date: 31/12/2023

@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "audio_utils_config.h"
+#include "au_config.h"
 #include "math.h"
 
 

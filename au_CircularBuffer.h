@@ -1,6 +1,6 @@
 /*
 
-CircularBuffer.h
+au_CircularBuffer.h
 
 Author: Matt Davison
 Date: 30/12/2023

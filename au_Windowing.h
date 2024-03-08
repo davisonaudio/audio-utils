@@ -1,6 +1,6 @@
 /*
 
-windowing.h
+au_Windowing.h
 
 Author: Matt Davison
 Date: 24/12/2023
@@ -9,7 +9,7 @@ Date: 24/12/2023
 
 #pragma once
 
-#include "audio_utils_config.h"
+#include "au_config.h"
 #include "math.h"
 
 class Windowing

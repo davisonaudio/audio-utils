@@ -1,6 +1,6 @@
 /*
 
-Onepole.h
+au_Onepole.h
 
 Author: Matt Davison
 Date: 04/03/2024
@@ -9,7 +9,7 @@ Date: 04/03/2024
 
 #pragma once
 
-#include "audio_utils_config.h"
+#include "au_config.h"
 
 class Onepole
 {
@@ -25,7 +25,7 @@ public:
     }
     sample_t process(sample_t input_sample)
     {
-        m_z1 = (input_sample * m_a0) + (m_z1 * m_b1);
+        m_z1 = (input_sample * m_a0) + (m_z1 * m_b1 * -1.0);
         return m_z1;
     }
 

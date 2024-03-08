@@ -1,6 +1,6 @@
 /*
 
-ToneGenerator.h
+au_ToneGenerator.h
 
 Author: Matt Davison
 Date: 22/01/2024
@@ -9,7 +9,7 @@ Date: 22/01/2024
 
 #pragma once
 
-#include "audio_utils_config.h"
+#include "au_config.h"
 #include <cmath>
 
 class ToneGenerator

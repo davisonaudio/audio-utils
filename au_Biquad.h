@@ -1,6 +1,6 @@
 /*
 
-Biquad.h
+au_Biquad.h
 
 Author: Matt Davison
 Date: 01/03/2024
@@ -17,7 +17,7 @@ http://www.earlevel.com/main/2012/11/25/biquad-c-source-code/
 
 #pragma once
 
-#include "audio_utils_config.h"
+#include "au_config.h"
 #include <math.h>
 
 class Biquad
