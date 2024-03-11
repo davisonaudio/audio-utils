@@ -19,7 +19,7 @@ public:
     struct Setup
     {
         sample_t sample_rate_hz;
-        sample_t frequecy_hz;
+        sample_t frequency_hz;
         sample_t duty_cycle;        //Between 0 and 1
     };
 
