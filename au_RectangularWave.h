@@ -44,7 +44,7 @@ public:
     {
         if (m_current_cycle_samples > m_period_samples)
         {
-            m_current_cycle_samples -= m_duty_cycle_samples;
+            m_current_cycle_samples -= m_current_cycle_samples;
         }
 
         bool output_val = m_current_cycle_samples <= m_duty_cycle_samples;
