@@ -18,13 +18,10 @@ public:
     struct SetupParameters
     {
         int sample_rate;
-        int window_size_samples;
+        int window_size_periods;
         sample_t target_frequency;
     };
-    GoertzelAlgorithm(const SetupParameters& setup_parameters)
-    {
-		setup(setup_parameters);
-    }
+
 
     struct QValues
     {
@@ -39,12 +36,12 @@ public:
 
     void setup(const SetupParameters& setup_parameters)
     {
-        sample_t omega = (2.0 * M_PI * setup_parameters.target_frequency) / setup_parameters.sample_rate;
-        m_coefficient = 2.0 * cos(omega);
-        m_sine_of_omega = sin(omega);
-        m_cosine_of_omega = cos(omega);
-        
+        m_sample_rate = setup_parameters.sample_rate;
+        m_window_size_periods = setup_parameters.window_size_periods;
+        m_target_frequency = setup_parameters.target_frequency;
+        recalcCoefficients();
     }
+
 
     void process(sample_t new_sample, QValues& q_vals)
     {
@@ -80,7 +77,23 @@ public:
     sample_t m_coefficient;
     sample_t m_sine_of_omega;
     sample_t m_cosine_of_omega;
+
     int m_window_length_samples;
+    int m_window_size_periods;
+
+    sample_t m_target_frequency;
+    int m_sample_rate;
+
+private:
+    void recalcCoefficients()
+    {
+        sample_t omega = (2.0 * M_PI * m_target_frequency) / m_sample_rate;
+        m_coefficient = 2.0 * cos(omega);
+        m_sine_of_omega = sin(omega);
+        m_cosine_of_omega = cos(omega);
+
+        m_window_length_samples = (int) m_window_size_periods * (m_sample_rate / m_target_frequency);
+    }
 };
 
 /*
@@ -90,9 +103,6 @@ class RealtimeGoertzel : public GoertzelAlgorithm
 {
 public:
 
-    RealtimeGoertzel(const SetupParameters& setup_parameters) : GoertzelAlgorithm(setup_parameters)
-    {
-    }
 
     void processSample(sample_t new_sample)
     {
@@ -144,45 +154,6 @@ This class takes the whole window as a buffer and processes it in one go.
 class WholeWindowGoertzel : public GoertzelAlgorithm
 {
 public:
-
-    WholeWindowGoertzel(const SetupParameters& setup_parameters) : GoertzelAlgorithm(setup_parameters)
-    {
-    }
-    
-    double getMagnitude(double* window_buffer)
-    {
-        return getMagnitudeQuick(getQValsForBuffer(window_buffer));
-    }
-    ComplexPolarForm getMagnitudeAndPhase(double* window_buffer)
-    {
-        return getComplexMagnitudeAndPhase(getQValsForBuffer(window_buffer));
-    }
-private:
-    QValues getQValsForBuffer(double* buffer)
-    {
-        QValues q_vals;
-        for (int i = 0 ; i < m_window_length_samples ; i++)
-        {
-            process(buffer[i], q_vals);
-        }
-
-        return q_vals;
-    }
-
-};
-
-/*
-This class implements a sliding goertzel algorithm, where the value at the end of the buffer is removed from the calculation at each step.
-This required each element of the buffer to be stored, so is templated with the buffer size to avoid dynamic allocation.
-*/
-template<unsigned long window_size>
-class SlidingGoertzel : public GoertzelAlgorithm
-{
-public:
-
-    SlidingGoertzel(const SetupParameters& setup_parameters) : GoertzelAlgorithm(setup_parameters)
-    {
-    }
     
     double getMagnitude(double* window_buffer)
     {
