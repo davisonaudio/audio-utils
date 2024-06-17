@@ -42,6 +42,12 @@ public:
         recalcCoefficients();
     }
 
+    void setTargetFrequencyHz(sample_t target_frequency_hz)
+    {
+        m_target_frequency = target_frequency_hz;
+        recalcCoefficients();
+    }
+
 
     void process(sample_t new_sample, QValues& q_vals)
     {
@@ -109,7 +115,8 @@ public:
         process(new_sample, m_current_q_values);
         if (++m_samples_in_window_processed == m_window_length_samples)
         {
-            processWindow();
+            m_last_q_values = m_current_q_values;
+            reset();
         }
     }
 
