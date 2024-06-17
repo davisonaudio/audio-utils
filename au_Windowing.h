@@ -24,7 +24,11 @@ public:
         RECTANGULAR
     };
 
-    Windowing(WindowType window_type, int window_size_samples);
+    Windowing(WindowType window_type = WindowType::HAMMING, int window_size_samples = 1);
+
+    void setWindowSizeSamples(int window_size_samples);
+
+    sample_t applyWindowToSample(sample_t sample);
     
 
     /*
@@ -36,7 +40,8 @@ public:
 
     Return: Windowed sample value
     */
-    sample_t applyWindowToSample(sample_t sample, int sample_number);
+    sample_t applyWindowToNumberedSample(sample_t sample, int sample_number);
+
 
     /*
     Apply windowing to a window-sized buffer.
@@ -48,10 +53,13 @@ public:
     */
     void applyWindowToBuffer(sample_t* sample_buffer);
 
+    void resetIndex();
+
 private:
 
     WindowType m_window_type;
     int m_window_size_samples;
+    int m_sample_number = 0;
 };
 
 Windowing::Windowing(WindowType window_type, int window_size_samples)
@@ -60,7 +68,23 @@ Windowing::Windowing(WindowType window_type, int window_size_samples)
     m_window_size_samples = window_size_samples;
 }
 
-sample_t Windowing::applyWindowToSample(sample_t sample, int sample_number)
+void Windowing::setWindowSizeSamples(int window_size_samples)
+{
+    m_window_size_samples = window_size_samples;
+    resetIndex();
+}
+
+sample_t Windowing::applyWindowToSample(sample_t sample)
+{
+    sample_t windowed_sample = applyWindowToNumberedSample(sample, m_sample_number);
+    if (++m_sample_number == m_window_size_samples)
+    {
+        m_sample_number = 0;
+    }
+    return windowed_sample;
+}
+
+sample_t Windowing::applyWindowToNumberedSample(sample_t sample, int sample_number)
 {
     switch (m_window_type)
     {
@@ -79,4 +103,9 @@ void Windowing::applyWindowToBuffer(sample_t* sample_buffer)
     {
         sample_buffer[i] = applyWindowToSample(sample_buffer[i], i);
     }
+}
+
+void Windowing::resetIndex()
+{
+    m_sample_number = 0;
 }
