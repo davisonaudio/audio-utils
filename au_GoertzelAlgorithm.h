@@ -73,19 +73,7 @@ class RealtimeGoertzel : public GoertzelAlgorithm
 {
 public:
 
-
-    void processSample(sample_t new_sample)
-    {
-        process(new_sample, m_current_q_values);
-        if (++m_samples_in_window_processed == m_window_length_samples)
-        {
-            m_last_q_values = m_current_q_values;
-            reset();
-        }
-    }
-
-
-    
+    void processSample(sample_t new_sample);
 
     /*
     Virtual function called when the end of the window is reached, allowing program to get magnitude/phase without continuously polling for new value
@@ -95,24 +83,15 @@ public:
     /*
     Get the magnitude of the last complete window
     */
-    sample_t getLastMagnitude()
-    {
-        return getMagnitudeQuick(m_last_q_values);
-    }
+    sample_t getLastMagnitude();
 
     /*
     Get the magnitude and phase of the last complete window
     */
-    ComplexPolarForm getLastComplexMagnitudeAndPhase()
-    {
-        return getComplexMagnitudeAndPhase(m_last_q_values);
-    }
+    ComplexPolarForm getLastComplexMagnitudeAndPhase();
 
-    void reset()
-    {
-        m_current_q_values.reset();
-        m_samples_in_window_processed = 0;
-    }
+    void reset();
+
 private:
     QValues m_current_q_values;
     QValues m_last_q_values;
@@ -185,7 +164,7 @@ GoertzelAlgorithm::ComplexPolarForm GoertzelAlgorithm::getComplexMagnitudeAndPha
     ComplexPolarForm mag_and_phase;
     sample_t real = q_vals.q1 - (q_vals.q2 * m_cosine_of_omega);
     sample_t imaginary = q_vals.q2 * m_sine_of_omega;
-    mag_and_phase.magnitude = sqrt( (real * real) + (imaginary * imaginary);
+    mag_and_phase.magnitude = sqrt( (real * real) + (imaginary * imaginary));
     mag_and_phase.phase = atan(imaginary / real);
 }
 
@@ -198,3 +177,35 @@ void GoertzelAlgorithm::recalcCoefficients()
 
     m_window_length_samples = (int) m_window_size_periods * (m_sample_rate / m_target_frequency);
 }
+
+
+/*
+ * RealtimeGoertzel implementation
+ */
+
+void RealtimeGoertzel::processSample(sample_t new_sample)
+{
+    process(new_sample, m_current_q_values);
+    if (++m_samples_in_window_processed == m_window_length_samples)
+    {
+        m_last_q_values = m_current_q_values;
+        reset();
+    }
+}
+
+sample_t RealtimeGoertzel::getLastMagnitude()
+{
+    return getMagnitudeQuick(m_last_q_values);
+}
+
+GoertzelAlgorithm::ComplexPolarForm RealtimeGoertzel::getLastComplexMagnitudeAndPhase()
+{
+    return getComplexMagnitudeAndPhase(m_last_q_values);
+}
+
+void RealtimeGoertzel::reset()
+{
+    m_current_q_values.reset();
+    m_samples_in_window_processed = 0;
+}
+
