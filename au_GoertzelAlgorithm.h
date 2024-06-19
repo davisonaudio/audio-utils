@@ -38,6 +38,7 @@ public:
     void setTargetFrequencyHz(sample_t target_frequency_hz);
     void process(sample_t new_sample, QValues& q_vals);
 
+    int getWindowLengthSamples();
     
 
     sample_t getMagnitudeQuick(QValues q_vals);
@@ -92,10 +93,17 @@ public:
 
     void reset();
 
+    /*
+     * Returns true if a new window val is available since last flag check, false if not
+     */
+    bool checkNewValFlag();
+
 private:
     QValues m_current_q_values;
     QValues m_last_q_values;
     int m_samples_in_window_processed = 0;
+
+    bool m_new_val_flag = false;
 };
 
 /*
@@ -129,6 +137,32 @@ private:
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*
  * GoertzelAlgorithm implementation
  */
@@ -152,6 +186,11 @@ void GoertzelAlgorithm::process(sample_t new_sample, QValues& q_vals)
     sample_t q0 = new_sample + (m_coefficient * q_vals.q1) - q_vals.q2;
     q_vals.q2 = q_vals.q1;
     q_vals.q1 = q0;
+}
+
+int GoertzelAlgorithm::getWindowLengthSamples()
+{
+    return m_window_length_samples;
 }
 
 sample_t GoertzelAlgorithm::getMagnitudeQuick(QValues q_vals)
@@ -190,6 +229,7 @@ void RealtimeGoertzel::processSample(sample_t new_sample)
     {
         m_last_q_values = m_current_q_values;
         reset();
+        m_new_val_flag = true;
     }
 }
 
@@ -209,3 +249,9 @@ void RealtimeGoertzel::reset()
     m_samples_in_window_processed = 0;
 }
 
+bool RealtimeGoertzel::checkNewValFlag()
+{
+    bool flag_state = m_new_val_flag;
+    m_new_val_flag = false;
+    return flag_state;
+}
