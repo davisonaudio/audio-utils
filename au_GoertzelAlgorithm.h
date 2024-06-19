@@ -18,7 +18,7 @@ public:
     struct SetupParameters
     {
         int sample_rate;
-        int window_size_periods;
+        int window_size_periods = 1;
         sample_t target_frequency;
     };
 
@@ -36,6 +36,7 @@ public:
 
     void setup(const SetupParameters& setup_parameters);
     void setTargetFrequencyHz(sample_t target_frequency_hz);
+    void setWindowSizePeriods(int window_size_periods);
     void process(sample_t new_sample, QValues& q_vals);
 
     int getWindowLengthSamples();
@@ -53,7 +54,7 @@ public:
     
  protected:   
     int m_window_length_samples;
-    int m_window_size_periods;
+    int m_window_size_periods = 1;
 
 private:
     sample_t m_coefficient;
@@ -215,6 +216,12 @@ void GoertzelAlgorithm::recalcCoefficients()
     m_cosine_of_omega = cos(omega);
 
     m_window_length_samples = (int) m_window_size_periods * (m_sample_rate / m_target_frequency);
+}
+
+void GoertzelAlgorithm::setWindowSizePeriods(int window_size_periods)
+{
+    m_window_size_periods = window_size_periods;
+    recalcCoefficients();
 }
 
 
