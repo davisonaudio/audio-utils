@@ -101,7 +101,7 @@ void Windowing::applyWindowToBuffer(sample_t* sample_buffer)
 {
     for (int i = 0 ; i < m_window_size_samples ; i++ )
     {
-        sample_buffer[i] = applyWindowToSample(sample_buffer[i], i);
+        sample_buffer[i] = applyWindowToNumberedSample(sample_buffer[i], i);
     }
 }
 
