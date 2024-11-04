@@ -56,6 +56,7 @@ public:
     void setQ(sample_t quality_factor);
     void setFilterGain(sample_t filter_gain_db);
     void setType(FilterType filter_type);
+	void setCoefficients(Coefficients biquad_coefficients);
 
     sample_t process(sample_t input_sample);
     void clean();
@@ -124,6 +125,11 @@ void Biquad::setType(FilterType filter_type)
 {
     m_filter_type = filter_type;
     calcCoefficients();
+}
+
+void Biquad::setCoefficients(Coefficients biquad_coefficients)
+{
+	m_coefficients = biquad_coefficients;
 }
 
 sample_t Biquad::process(sample_t input_sample)
