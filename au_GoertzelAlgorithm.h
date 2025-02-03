@@ -40,6 +40,7 @@ public:
     void process(sample_t new_sample, QValues& q_vals);
 
     int getWindowLengthSamples();
+    int getWindowLengthPeriods();
     
 
     sample_t getMagnitudeQuick(QValues q_vals);
@@ -222,6 +223,11 @@ void GoertzelAlgorithm::setWindowSizePeriods(int window_size_periods)
 {
     m_window_size_periods = window_size_periods;
     recalcCoefficients();
+}
+
+int GoertzelAlgorithm::getWindowLengthPeriods()
+{
+    return m_window_size_periods;
 }
 
 
