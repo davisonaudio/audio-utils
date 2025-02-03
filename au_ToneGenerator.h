@@ -16,7 +16,7 @@ class ToneGenerator
 {
 public:
 
-    ToneGenerator(sample_t tone_frequency_hz, unsigned int sample_rate_hz, sample_t level_db = 0)
+    ToneGenerator(sample_t tone_frequency_hz, sample_t sample_rate_hz, sample_t level_db = 0)
     {
         setFrequency(tone_frequency_hz);
         setSampleRate(sample_rate_hz);
@@ -34,9 +34,9 @@ public:
         m_frequency = frequency_hz;
     }
 
-    void setSampleRate(unsigned int sample_rate_hz)
+    void setSampleRate(sample_t sample_rate_hz)
     {
-        m_inverse_sample_rate = (sample_t) 1 / sample_rate_hz;
+        m_inverse_sample_rate = 1 / sample_rate_hz;
     }
 
     void setLeveldB(sample_t level_db)
@@ -47,9 +47,9 @@ public:
     sample_t process()
     {
         sample_t out = sinf(m_phase);
-		m_phase += 2.0f * (float)M_PI * m_frequency * m_inverse_sample_rate;
+		m_phase += 2.0f * (sample_t)M_PI * m_frequency * m_inverse_sample_rate;
 		if(m_phase > M_PI)
-			m_phase -= 2.0f * (float)M_PI;
+			m_phase -= 2.0f * (sample_t)M_PI;
         return out * m_level_lin;
     }
 
