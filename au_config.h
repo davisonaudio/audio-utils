@@ -31,7 +31,7 @@ constexpr sample_t intToNormalised(T integer_value) {
 }
 
 template <typename T>
-constexpr sample_t normalisedToInt(T normalised_value) {
+constexpr T normalisedToInt(sample_t normalised_value) {
   return normalised_value < 0
     ? -static_cast<sample_t>(normalised_value) * std::numeric_limits<T>::min()
     :  static_cast<sample_t>(normalised_value) * std::numeric_limits<T>::max();
