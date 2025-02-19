@@ -15,12 +15,18 @@ class Onepole
 {
 
 public:
+
+    Onepole(sample_t b1_value = 0.0, bool normalise_gain = true)
+    {
+        setB1(b1_value, normalise_gain);
+    }
+
     void setB1(sample_t b1_value, bool normalise_gain = true)
     {
         m_b1 = b1_value;
         if (normalise_gain)
         {
-            m_a0 = 1 - m_b1;
+            m_a0 = 1 - abs(m_b1);
         }
     }
     sample_t process(sample_t input_sample)
