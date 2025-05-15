@@ -10,6 +10,7 @@ Date: 24/12/2023
 #pragma once
 
 #include <math.h>
+#include <limits>
 
 #define sample_t float
 
@@ -35,4 +36,17 @@ constexpr T normalisedToInt(sample_t normalised_value) {
   return normalised_value < 0
     ? -static_cast<sample_t>(normalised_value) * std::numeric_limits<T>::min()
     :  static_cast<sample_t>(normalised_value) * std::numeric_limits<T>::max();
+}
+
+sample_t auClamp(sample_t value, sample_t lower, sample_t upper)
+{
+    if (value > upper)
+    {
+      return upper;
+    }
+    else if (value < lower)
+    {
+      return lower;
+    }
+    return value;
 }
