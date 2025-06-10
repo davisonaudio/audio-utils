@@ -11,7 +11,7 @@ Date: 25/04/2025
 
 #define SAMPLE_RATE 48000
 
-
+#include "stdint.h"
 #include "au_config.h"
 
 namespace AudioUtils
@@ -27,7 +27,7 @@ namespace AudioUtils
         KarplusStrong() 
         {
             damping = 0.98f;
-            blend = 0.0f;
+            blend = 0.9f;
             lowpassCoeff = 0.5f;
             pluckPos = 0.2f;
             writeIndex = 0;
