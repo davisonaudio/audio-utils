@@ -47,6 +47,10 @@ namespace AudioUtils
         void setBlend(sample_t b) { blend = auClamp(b, 0.0f, 1.0f); }
         void setLowpass(sample_t a) { lowpassCoeff = auClamp(a, 0.0f, 1.0f); }
         void setPluckPosition(sample_t pos) { pluckPos = auClamp(pos, 0.01f, 0.99f); }
+
+        sample_t getDamping(){return damping;}
+        sample_t getBlend(){return blend;}
+        sample_t getFrequency(){return SAMPLE_RATE / targetDelay;}
     
         void pluck() 
         {
