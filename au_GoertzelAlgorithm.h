@@ -35,7 +35,10 @@ public:
     };
 
     void setup(const SetupParameters& setup_parameters);
-    void setTargetFrequencyHz(sample_t target_frequency_hz);
+    /*
+     * Returns actual frequency (integer length of window causes rounding)
+     */
+    sample_t setTargetFrequencyHz(sample_t target_frequency_hz);
     void setWindowSizePeriods(int window_size_periods);
     void process(sample_t new_sample, QValues& q_vals);
 
@@ -65,8 +68,8 @@ private:
     sample_t m_target_frequency;
     int m_sample_rate;
 
-
-    void recalcCoefficients();
+    //Returns actual frequency achieved with integer window
+    sample_t recalcCoefficients();
 };
 
 /*
@@ -87,6 +90,8 @@ public:
     Get the magnitude of the last complete window
     */
     sample_t getLastMagnitude();
+
+    sample_t getLastPhase();
 
     /*
     Get the magnitude and phase of the last complete window
@@ -177,10 +182,10 @@ void GoertzelAlgorithm::setup(const SetupParameters& setup_parameters)
     recalcCoefficients();
 }
 
-void GoertzelAlgorithm::setTargetFrequencyHz(sample_t target_frequency_hz)
+sample_t GoertzelAlgorithm::setTargetFrequencyHz(sample_t target_frequency_hz)
 {
     m_target_frequency = target_frequency_hz;
-    recalcCoefficients();
+    return recalcCoefficients();
 }
 
 void GoertzelAlgorithm::process(sample_t new_sample, QValues& q_vals)
@@ -207,16 +212,19 @@ GoertzelAlgorithm::ComplexPolarForm GoertzelAlgorithm::getComplexMagnitudeAndPha
     sample_t imaginary = q_vals.q2 * m_sine_of_omega;
     mag_and_phase.magnitude = sqrt( (real * real) + (imaginary * imaginary));
     mag_and_phase.phase = atan(imaginary / real);
+    return mag_and_phase;
 }
 
-void GoertzelAlgorithm::recalcCoefficients()
+sample_t GoertzelAlgorithm::recalcCoefficients()
 {
     sample_t omega = (2.0 * M_PI * m_target_frequency) / m_sample_rate;
     m_coefficient = 2.0 * cos(omega);
     m_sine_of_omega = sin(omega);
     m_cosine_of_omega = cos(omega);
 
-    m_window_length_samples = (int) m_window_size_periods * (m_sample_rate / m_target_frequency);
+    int target_period_rounded = static_cast<int>(m_sample_rate / m_target_frequency);
+    m_window_length_samples = m_window_size_periods * (m_sample_rate / m_target_frequency);
+    return static_cast<sample_t>( m_sample_rate / target_period_rounded);
 }
 
 void GoertzelAlgorithm::setWindowSizePeriods(int window_size_periods)
@@ -249,6 +257,12 @@ void RealtimeGoertzel::processSample(sample_t new_sample)
 sample_t RealtimeGoertzel::getLastMagnitude()
 {
     return getMagnitudeQuick(m_last_q_values);
+}
+
+sample_t RealtimeGoertzel::getLastPhase()
+{
+    GoertzelAlgorithm::ComplexPolarForm mag_and_phase = getComplexMagnitudeAndPhase(m_last_q_values);
+    return mag_and_phase.phase;
 }
 
 GoertzelAlgorithm::ComplexPolarForm RealtimeGoertzel::getLastComplexMagnitudeAndPhase()
