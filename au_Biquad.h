@@ -60,13 +60,12 @@ public:
 
     sample_t process(sample_t input_sample);
     void clean();
-
+    Coefficients m_coefficients;
 
 private:
 
     void calcCoefficients();
 
-    Coefficients m_coefficients;
     sample_t m_z1 = 0.0;
     sample_t m_z2 = 0.0;
     sample_t m_sample_rate_hz, m_cutoff_freq_hz, m_quality_factor, m_filter_gain_db;
